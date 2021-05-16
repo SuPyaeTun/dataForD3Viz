@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<h2> Top 5 Countries with the most CO2 Emissions</h2>
+<h3> Please click on the buttons for the CO2 emissions by the year </h3>
+
+<!-- Add 3 buttons -->
+<button onclick="update(data1)">2017</button>
+<button onclick="update(data2)">2016</button>
+<button onclick="update(data3)">2015</button>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<script>
+
+// create 3 data_set
+var data1 = [
+   {group: "China", value: 9838754028},
+   {group: "United States", value: 5269529513},
+   {group: "India", value: 2466765373},
+   {group: "Russia", value: 1692794839},
+   {group: "Japan", value: 1205061178}
+];
+
+var data2 = [
+   {group: "China", value: 9704479432},
+   {group: "United States", value: 5310861406},
+   {group: "India", value: 2377447863},
+   {group: "Russia", value: 1668069933},
+   {group: "Japan", value: 1204318623}
+];
+
+var data3 = [
+   {group: "China", value: 9716467840},
+   {group: "United States", value: 5420804127},
+   {group: "India", value: 2276407195},
+   {group: "Russia", value: 1671895079},
+   {group: "Japan", value: 1223666475}
+];
+
+// set the dimensions and margins of the graph
+var margin = {top: 50, right: 50, bottom: 100, left: 100},
+    width = 900 - margin.left - margin.right,
+    height = 900 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// X axis
+var x = d3.scaleBand()
+  .range([ 0, width ])
+  .domain(data1.map(function(d) { return d.group; }))
+  .padding(0.2);
+svg.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x))
+
+// Add Y axis
+var y = d3.scaleLinear()
+  .domain([0, 10000000000])
+  .range([ height, 0]);
+svg.append("g")
+  .attr("class", "myYaxis")
+  .call(d3.axisLeft(y));
+
+// A function that create / update the plot for a given variable:
+function update(data) {
+
+  var u = svg.selectAll("rect")
+    .data(data)
+
+  u
+    .enter()
+    .append("rect")
+    .merge(u)
+    .transition()
+    .duration(1000)
+      .attr("x", function(d) { return x(d.group); })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("width", x.bandwidth())
+      .attr("height", function(d) { return height - y(d.value); })
+      .attr("fill", function() {
+      	return "hsl(" + Math.random() * 360 + ",100%,50%)";
+      })
+      .attr("stroke", "black")
+}
+
+// Initialize the plot with the first dataset
+update(data1)
+
+</script>
